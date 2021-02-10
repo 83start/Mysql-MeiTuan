@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">takeaway</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="area" view="colnames">
+<left>71</left>
+<top>183</top>
+<width>105</width>
+<height>95</height>
+<sql_create_table>CREATE TABLE `area` (
+  `areaName` varchar(20) NOT NULL,
+  PRIMARY KEY (`areaName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="business" view="colnames">
+<left>224</left>
+<top>198</top>
+<width>136</width>
+<height>197</height>
+<sql_create_table>CREATE TABLE `business` (
+  `busiId` int(11) NOT NULL AUTO_INCREMENT,
+  `areaName` varchar(20) DEFAULT NULL,
+  `busiName` varchar(10) NOT NULL,
+  `busiPhone` char(12) DEFAULT NULL,
+  `busiAddress` varchar(256) NOT NULL,
+  `busiBossName` varchar(10) DEFAULT NULL,
+  `busiBossIdCard` char(18) NOT NULL,
+  PRIMARY KEY (`busiId`),
+  UNIQUE KEY `busi_busiIdCard_inx` (`busiBossIdCard`),
+  UNIQUE KEY `busi_busiIdPhone_inx` (`busiPhone`),
+  KEY `busi_areaName_fk` (`areaName`),
+  CONSTRAINT `busi_areaName_fk` FOREIGN KEY (`areaName`) REFERENCES `area` (`areaName`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="customer" view="colnames">
+<left>199</left>
+<top>-9</top>
+<width>111</width>
+<height>179</height>
+<sql_create_table>CREATE TABLE `customer` (
+  `cusId` int(11) NOT NULL AUTO_INCREMENT,
+  `areaName` varchar(20) DEFAULT NULL,
+  `cusName` varchar(10) NOT NULL,
+  `cusPhone` char(12) NOT NULL,
+  `cusAddress` varchar(256) NOT NULL,
+  `cusIdCard` char(18) NOT NULL,
+  PRIMARY KEY (`cusId`),
+  UNIQUE KEY `cus_cusIdCard_inx` (`cusIdCard`),
+  UNIQUE KEY `cus_cusIdPhoen_inx` (`cusPhone`),
+  KEY `cus_areaName_fk` (`areaName`),
+  CONSTRAINT `cus_areaName_fk` FOREIGN KEY (`areaName`) REFERENCES `area` (`areaName`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="foods" view="colnames">
+<left>416</left>
+<top>180</top>
+<width>117</width>
+<height>163</height>
+<sql_create_table>CREATE TABLE `foods` (
+  `fooId` int(11) NOT NULL AUTO_INCREMENT,
+  `busiId` int(11) DEFAULT NULL,
+  `fooCategory` varchar(10) DEFAULT NULL,
+  `fooName` varchar(15) NOT NULL,
+  `fooPrice` double NOT NULL,
+  PRIMARY KEY (`fooId`),
+  KEY `foo_busiId_fk` (`busiId`),
+  CONSTRAINT `foo_busiId_fk` FOREIGN KEY (`busiId`) REFERENCES `business` (`busiId`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="orders" view="colnames">
+<left>658</left>
+<top>180</top>
+<width>109</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `orders` (
+  `cusId` int(11) NOT NULL,
+  `busiId` int(11) NOT NULL,
+  `ridId` int(11) NOT NULL,
+  `totalPrice` double(10,2) DEFAULT '0.00',
+  `order_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `state` int(11) NOT NULL DEFAULT '0' COMMENT '已下单0,已收货1,已退款2',
+  PRIMARY KEY (`cusId`,`busiId`,`ridId`),
+  KEY `ord_busiId_fk` (`busiId`),
+  KEY `ord_ridId_fk` (`ridId`),
+  CONSTRAINT `ord_busiId_fk` FOREIGN KEY (`busiId`) REFERENCES `business` (`busiId`),
+  CONSTRAINT `ord_cusId_fk` FOREIGN KEY (`cusId`) REFERENCES `customer` (`cusId`),
+  CONSTRAINT `ord_ridId_fk` FOREIGN KEY (`ridId`) REFERENCES `rider` (`ridId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="rider" view="colnames">
+<left>200</left>
+<top>457</top>
+<width>105</width>
+<height>146</height>
+<sql_create_table>CREATE TABLE `rider` (
+  `ridId` int(11) NOT NULL AUTO_INCREMENT,
+  `areaName` varchar(20) DEFAULT NULL,
+  `ridName` varchar(10) NOT NULL,
+  `ridPhone` char(12) NOT NULL,
+  PRIMARY KEY (`ridId`),
+  KEY `rid_areaName_fk` (`areaName`),
+  CONSTRAINT `rid_areaName_fk` FOREIGN KEY (`areaName`) REFERENCES `area` (`areaName`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8</sql_create_table>
+</table>
+<table name="ordernum_ridder" view="colnames">
+<left>29</left>
+<top>456</top>
+<width>115</width>
+<height>129</height>
+<sql_create_table>CREATE TABLE `ordernum_ridder` (
+  `ridId` int(11) DEFAULT NULL,
+  `sum_order` double DEFAULT NULL,
+  `good_ridder` char(10) DEFAULT NULL,
+  KEY `num_rider_fk` (`ridId`),
+  CONSTRAINT `num_rider_fk` FOREIGN KEY (`ridId`) REFERENCES `rider` (`ridId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="vip_customer" view="colnames">
+<left>52</left>
+<top>-9</top>
+<width>105</width>
+<height>129</height>
+<sql_create_table>CREATE TABLE `vip_customer` (
+  `cusId` int(11) DEFAULT NULL,
+  `sum_price` double DEFAULT NULL,
+  `vip_name` varchar(6) DEFAULT NULL,
+  KEY `cus_vip_fk` (`cusId`),
+  CONSTRAINT `cus_vip_fk` FOREIGN KEY (`cusId`) REFERENCES `customer` (`cusId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
